@@ -220,6 +220,27 @@ function generateMVPFeatures(category) {
 }
 
 /**
+ * FUNCTION: generateSummary
+ * 
+ * Generates a concise 1-2 sentence project description based on category and title.
+ * First sentence describes what the app does, second names a concrete benefit.
+ */
+function generateSummary(text, category, title) {
+  const summaryMap = {
+    'Communication': `${title} helps you track messages and flag ones that need a reply before they fall through the cracks.`,
+    'Scheduling': `${title} lets you book or manage time slots without back-and-forth emails or phone calls.`,
+    'Finance / Shopping': `${title} logs your recurring costs so you always know what you're paying and what to cancel.`,
+    'Health & Habits': `${title} tracks your daily habits and shows your streak so you stay consistent without thinking about it.`,
+    'Account Management': `${title} stores your account hints and flags outdated credentials before they lock you out.`,
+    'Data & Tracking': `${title} turns your manual logs into a clean dashboard so trends are visible at a glance.`,
+    'Organization': `${title} tags and indexes your items so you can find anything in seconds instead of searching forever.`,
+    'Software UX': `${title} surfaces and documents UX problems so they can be prioritized and fixed.`,
+    'General Productivity': `${title} removes a repeating manual step from your workflow so you can focus on the actual work.`
+  };
+  return summaryMap[category] || `${title} helps solve a recurring workflow problem. Users save time by having one place to manage it.`;
+}
+
+/**
  * FUNCTION: shapeCard
  * 
  * Transforms a raw complaint into a structured card object.
@@ -242,13 +263,25 @@ function shapeCard(complaint) {
   const difficulty = estimateDifficulty(category);
   const mvp = generateMVPFeatures(category);
 
+  const techAngleMap = {
+    'Communication': 'Build a message tracking or follow-up tool that reduces inbox friction.',
+    'Scheduling': 'Build a scheduling or booking tool that eliminates manual coordination.',
+    'Finance / Shopping': 'Build a spending tracker or subscription manager that surfaces hidden costs.',
+    'Health & Habits': 'Build a habit logger or reminder tool that creates consistency.',
+    'Account Management': 'Build a credential organizer that reduces login friction.',
+    'Data & Tracking': 'Build a lightweight dashboard that turns manual logging into visible trends.',
+    'Organization': 'Build a tagging or search tool that makes scattered files findable.',
+    'Software UX': 'Build a tool that surfaces, documents, or fixes a recurring UX failure.',
+    'General Productivity': 'Build a workflow tool that removes a repeating manual step.'
+  };
+
   return {
     complaint: complaint.text,
     source: complaint.source,
     category,
-    techAngle: `Build a tool that removes or reduces the friction described in this complaint.`,
+    techAngle: techAngleMap[category] || 'Build a tool that removes or reduces the friction described in this complaint.',
     projectTitle: title,
-    summary: `A lightweight web app that helps users address the frustration of "${complaint.text.slice(0, 60)}..." — turned into a practical software solution.`,
+    summary: generateSummary(complaint.text, category, title),
     mvpFeatures: mvp,
     difficulty
   };
