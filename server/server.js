@@ -7,6 +7,9 @@
  * 3. Handles CORS so the frontend can make requests even if opened locally
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 // Import required packages
 const express = require('express');        // Web server framework
 const cors = require('cors');              // Cross-Origin Resource Sharing middleware
@@ -15,7 +18,7 @@ const cardsRouter = require('./routes/cards');  // Router that handles /api/card
 
 // Initialize the Express application
 const app = express();
-const PORT = 3000;  // The server will run on http://localhost:3000
+const PORT = process.env.PORT || 3000;  // Use .env PORT or default to 3000
 
 // MIDDLEWARE SETUP
 // Allow the frontend (opened as a file or on another port) to call this API

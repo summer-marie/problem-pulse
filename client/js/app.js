@@ -9,7 +9,11 @@
  */
 
 // API endpoint - requests 6 cards per load
-const API_URL = 'http://localhost:3000/api/cards?count=6';
+// On deployment, frontend and backend share the same origin, so use relative URL
+// Locally, they may run on different ports, so use full localhost URL
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api/cards?count=6'
+  : '/api/cards?count=6';
 
 // DOM element references (cached for performance)
 const loadBtn = document.getElementById('load-btn');              // The "Get Project Ideas" button
