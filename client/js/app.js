@@ -36,7 +36,8 @@ loadBtn.addEventListener('click', fetchCards);
 async function fetchCards() {
   // STEP 1: Reset UI to loading state
   loadBtn.disabled = true;                      // Prevent double-clicks
-  loadBtn.textContent = 'Loading...';           // Update button text
+  loadBtn.classList.add('is-loading');
+  loadBtn.innerHTML = '<span class="spinner"></span> Scanning Pulse...';
   cardsContainer.innerHTML = '';                // Clear any previous cards
   showStatus('Fetching real-world complaints...'); // Show loading message
 
@@ -54,7 +55,13 @@ async function fetchCards() {
 
     // Handle edge case: API returned empty array
     if (!cards.length) {
-      showStatus('No matching complaints found right now — the filter may be too strict. Click again to try a fresh scrape.');
+      hideStatus();
+      cardsContainer.innerHTML = `
+        <div class="empty-state">
+          <span>No signals found</span>
+          <p>The filter didn't find strong matches right now. 
+             Try clicking again for a fresh scrape.</p>
+        </div>`;
       return;
     }
 
@@ -70,7 +77,8 @@ async function fetchCards() {
   } finally {
     // STEP 5: Reset button state (runs whether success or error)
     loadBtn.disabled = false;
-    loadBtn.textContent = 'Get Project Ideas';
+    loadBtn.classList.remove('is-loading');
+    loadBtn.innerHTML = 'Get Project Ideas';
   }
 }
 

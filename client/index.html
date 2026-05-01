@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Problem Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>Problem Pulse</h1>
-    <p class="tagline">Real complaints. Real project ideas.</p>
-  </header>
-
-  <main>
-    <div class="controls">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="hero-eyebrow">🔍 Powered by real complaints</span>
+      <h1 class="hero-title">Problem Pulse</h1>
+      <p class="hero-sub">Turn real-world frustrations from Reddit and Hacker News into your next coding project.</p>
       <button id="load-btn">Get Project Ideas</button>
     </div>
+  </section>
 
+  <main>
     <p id="status-msg" class="status" hidden></p>
-
     <section id="cards-container" class="cards-grid"></section>
   </main>
 
