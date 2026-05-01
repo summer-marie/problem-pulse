@@ -44,4 +44,22 @@ function cacheAge() {
   }
 }
 
-module.exports = { readCache, writeCache, cacheAge };
+/**
+ * Deletes the cache file from disk.
+ * Forces the next /api/cards request to do a fresh live scrape.
+ */
+function clearCache() {
+  try {
+    if (fs.existsSync(CACHE_PATH)) {
+      fs.unlinkSync(CACHE_PATH);
+      console.log('[cache] Cache cleared.');
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error('[cache] Failed to clear cache:', err.message);
+    return false;
+  }
+}
+
+module.exports = { readCache, writeCache, cacheAge, clearCache };

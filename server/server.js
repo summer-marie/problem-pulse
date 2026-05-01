@@ -16,6 +16,7 @@ const cors = require('cors');              // Cross-Origin Resource Sharing midd
 const path = require('path');              // File path utilities
 const rateLimit = require('express-rate-limit');  // Rate limiting middleware
 const cardsRouter = require('./routes/cards');  // Router that handles /api/cards requests
+const adminRouter = require('./routes/admin');  // Router that handles /api/admin requests
 
 // Initialize the Express application
 const app = express();
@@ -49,6 +50,9 @@ const apiLimiter = rateLimit({
 // Route all requests starting with /api/cards to the cardsRouter
 // Example: GET http://localhost:3000/api/cards?count=5
 app.use('/api/cards', apiLimiter, cardsRouter);
+
+// Admin routes for cache management
+app.use('/api/admin', adminRouter);
 
 // START THE SERVER
 // Listen on PORT 3000 and log a success message when ready
