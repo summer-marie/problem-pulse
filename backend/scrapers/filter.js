@@ -1,6 +1,29 @@
 /**
+ * FILTER.JS - Complaint Filtering and Card Shaping Module
+ * 
+ * This file takes raw complaints from the scraper and:
+ * 1. Filters out complaints that aren't tech-solvable
+ * 2. Transforms remaining complaints into structured "card" objects
+ * 3. Adds metadata like category, difficulty, MVP features, etc.
+ */
+
+/**
+ * TECH_KEYWORDS - Allowlist Filter
+ * 
  * Keywords that strongly suggest a complaint is tech-solvable.
- * A complaint only needs to match one of these to pass the filter.
+ * If a complaint contains ANY of these keywords, it passes the first filter.
+ * 
+ * Organized by theme:
+ * - Automation/reminders
+ * - Time waste/friction
+ * - Organization/search
+ * - Communication
+ * - Scheduling
+ * - Money/shopping
+ * - Health/habits
+ * - Data/analytics
+ * - Security/accounts
+ * - Software/tools
  */
 const TECH_KEYWORDS = [
   // Automation / reminders
@@ -31,8 +54,16 @@ const TECH_KEYWORDS = [
 ];
 
 /**
- * Keywords that indicate a complaint is purely personal/emotional
- * and unlikely to be addressed with a software tool.
+ * EXCLUDE_KEYWORDS - Blocklist Filter
+ * 
+ * Keywords that indicate a complaint is:
+ * - Too sensitive or personal
+ * - Related to serious trauma/illness
+ * - Political or controversial
+ * - Not addressable with software
+ * 
+ * Even if a complaint has a TECH_KEYWORD, if it also has an EXCLUDE_KEYWORD,
+ * it gets filtered out to keep results appropriate and actionable.
  */
 const EXCLUDE_KEYWORDS = [
   'grief', 'mourning', 'funeral', 'death', 'abuse', 'assault', 'violence',
@@ -42,7 +73,21 @@ const EXCLUDE_KEYWORDS = [
 ];
 
 /**
- * Very rough category guesser based on keyword presence.
+ * FUNCTION: detectCategory
+ * 
+ * Analyzes the complaint text and assigns it to a category.
+ * Uses regex pattern matching against common keywords.
+ * 
+ * Categories:
+ * - Communication (emails, messages, notifications)
+ * - Scheduling (calendars, appointments, meetings)
+ * - Finance / Shopping (bills, subscriptions, payments)
+ * - Health & Habits (medication, exercise, routines)
+ * - Account Management (passwords, logins)
+ * - Data & Tracking (logs, reports, analytics)
+ * - Organization (files, search, clutter)
+ * - Software UX (apps, tools, websites)
+ * - General Productivity (default fallback)
  */
 function detectCategory(text) {
   const t = text.toLowerCase();
@@ -58,7 +103,14 @@ function detectCategory(text) {
 }
 
 /**
- * Generates a rough "build difficulty" rating based on category.
+ * FUNCTION: estimateDifficulty
+ * 
+ * Estimates how long it would take to build an MVP for this category.
+ * 
+ * Difficulty Tiers:
+ * - Beginner (1-2 weeks): Simple CRUD apps, basic tracking
+ * - Intermediate (2-4 weeks): More complex logic, external APIs, scheduling
+ * - Beginner-Intermediate (1-3 weeks): Falls in between
  */
 function estimateDifficulty(category) {
   const easy = ['Communication', 'Scheduling', 'Health & Habits'];
@@ -69,8 +121,11 @@ function estimateDifficulty(category) {
 }
 
 /**
- * Generates a suggested project title from the complaint text.
- * Very simple heuristic — good enough for v1.
+ * FUNCTION: suggestTitle
+ * 
+ * Generates a catchy project name based on the category.
+ * Currently uses a simple lookup map - could be enhanced to parse
+ * the actual complaint text for more custom names.
  */
 function suggestTitle(text, category) {
   const map = {
@@ -88,7 +143,15 @@ function suggestTitle(text, category) {
 }
 
 /**
- * Generates 3 realistic MVP features for the project idea.
+ * FUNCTION: generateMVPFeatures
+ * 
+ * Returns an array of 3 concrete MVP features for the given category.
+ * These are realistic, implementable features for a beginner/intermediate developer.
+ * 
+ * Each feature is:
+ * - Specific and actionable
+ * - Core to solving the problem
+ * - Achievable in a 1-4 week timeframe
  */
 function generateMVPFeatures(category) {
   const features = {
@@ -143,7 +206,21 @@ function generateMVPFeatures(category) {
 }
 
 /**
- * Converts a raw complaint object into a shaped "card" object.
+ * FUNCTION: shapeCard
+ * 
+ * Transforms a raw complaint into a structured card object.
+ * 
+ * Input: { text, source, url, upvotes }
+ * Output: {
+ *   complaint: original text
+ *   source: where it came from
+ *   category: auto-detected category
+ *   techAngle: brief explanation of how tech can help
+ *   projectTitle: suggested app name
+ *   summary: 1-2 sentence project description
+ *   mvpFeatures: array of 3 core features
+ *   difficulty: time estimate
+ * }
  */
 function shapeCard(complaint) {
   const category = detectCategory(complaint.text);
@@ -164,17 +241,29 @@ function shapeCard(complaint) {
 }
 
 /**
- * Filters raw complaints down to only tech-solvable ones, then shapes each into a card.
+ * FUNCTION: filterAndShape (MAIN ENTRY POINT)
+ * 
+ * Takes an array of raw complaints and:
+ * 1. Filters to only tech-solvable ones (has TECH_KEYWORD, no EXCLUDE_KEYWORD)
+ * 2. Transforms each passing complaint into a full card object
+ * 
+ * This is the main export used by routes/cards.js
  */
 function filterAndShape(rawComplaints) {
   return rawComplaints
     .filter((c) => {
       const t = c.text.toLowerCase();
+      
+      // Must have at least one tech keyword
       const hasTechKeyword = TECH_KEYWORDS.some((kw) => t.includes(kw));
+      
+      // Must NOT have any exclude keywords
       const isExcluded = EXCLUDE_KEYWORDS.some((kw) => t.includes(kw));
+      
+      // Pass filter only if tech-related AND not excluded
       return hasTechKeyword && !isExcluded;
     })
-    .map(shapeCard);
+    .map(shapeCard);  // Transform each passing complaint into a card
 }
 
 module.exports = { filterAndShape };

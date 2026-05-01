@@ -1,67 +1,106 @@
-const express = require('express');
-const router = express.Router();
-const { scrapeAll } = require('../scrapers/scraper');
-const { filterAndShape } = require('../scrapers/filter');
-const { readCache, writeCache, cacheAge } = require('../data/cache');
+/**
+ * CARDS.JS - API Route Handler for /api/cards
+ * 
+ * This file contains the main logic for fetching project idea cards.
+ * It uses a 3-tier fallback strategy:
+ * 1. Fresh cache (if < 30 minutes old)
+ * 2. Live scraping from Reddit + Hacker News
+ * 3. Stale cache (if scraping fails but old cache exists)
+ * 4. Hardcoded fallback dataset (if all else fails)
+ */
 
-// How long to reuse the cache before re-scraping (30 minutes)
+const express = require('express');
+const router = express.Router();  // Express router to handle routes
+const { scrapeAll } = require('../scrapers/scraper');      // Fetches complaints from Reddit/HN
+const { filterAndShape } = require('../scrapers/filter');  // Filters and transforms raw complaints into cards
+const { readCache, writeCache, cacheAge } = require('../data/cache');  // Cache utilities
+
+// CACHE CONFIGURATION
+// How long to reuse the cache before re-scraping (30 minutes = 1800000 milliseconds)
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
 /**
- * GET /api/cards
- * Returns a random batch of complaint cards.
- * Query param: ?count=5  (default: 5, max: 20)
- *
- * Flow:
- *  1. If the cache is fresh, serve cards from it.
- *  2. Otherwise, scrape live data, filter it, cache it, then serve from it.
- *  3. If live scraping fails and cache exists, fall back to the cache.
- *  4. If nothing is available, return the built-in fallback dataset.
+ * GET /api/cards - Main API endpoint
+ * 
+ * Returns a random batch of project idea cards based on real-world complaints.
+ * 
+ * Query Parameters:
+ *   - count: Number of cards to return (default: 5, max: 20)
+ *   - Example: GET /api/cards?count=10
+ * 
+ * Response Flow (3-tier fallback strategy):
+ *  1. FRESH CACHE: If cache exists and is < 30 min old, return random cards from it
+ *  2. LIVE SCRAPE: Otherwise, scrape Reddit + HN, filter/shape the data, cache it, and return
+ *  3. STALE CACHE FALLBACK: If scraping fails but old cache exists, use it anyway
+ *  4. HARDCODED FALLBACK: If all else fails, return the built-in dataset below
  */
 router.get('/', async (req, res) => {
+  // Parse the 'count' query parameter, default to 5, max out at 20
   const count = Math.min(parseInt(req.query.count) || 5, 20);
 
-  // --- Try cache first ---
+  // STEP 1: Try serving from fresh cache first (fastest option)
   if (cacheAge() < CACHE_TTL_MS) {
     const cached = readCache();
     if (cached.length > 0) {
+      // Cache is fresh and has data - return random selection immediately
       return res.json(pickRandom(cached, count));
     }
   }
 
-  // --- Live scrape ---
+  // STEP 2: Cache is stale or missing - attempt live scraping
   try {
+    // Scrape Reddit and Hacker News in parallel
     const raw = await scrapeAll();
+    
+    // Filter out non-tech complaints and shape into card format
     const cards = filterAndShape(raw);
 
     if (cards.length > 0) {
+      // Scraping succeeded - save to cache and return random selection
       writeCache(cards);
       return res.json(pickRandom(cards, count));
     }
   } catch (err) {
+    // Scraping failed (network error, timeout, API changes, etc.)
     console.error('[/api/cards] Scrape error:', err.message);
   }
 
-  // --- Stale cache fallback ---
+  // STEP 3: Scraping failed - try using stale cache as emergency fallback
   const stale = readCache();
   if (stale.length > 0) {
     console.warn('[/api/cards] Using stale cache as fallback.');
     return res.json(pickRandom(stale, count));
   }
 
-  // --- Hardcoded fallback dataset ---
+  // STEP 4: Everything failed - return hardcoded fallback dataset
+  // This ensures the app always works, even with no internet
   return res.json(pickRandom(FALLBACK_CARDS, count));
 });
 
-/** Returns `n` randomly selected items from an array. */
+/**
+ * HELPER FUNCTION: pickRandom
+ * Returns `n` randomly selected items from an array.
+ * 
+ * How it works:
+ * 1. Create a copy of the array using spread operator [...arr]
+ * 2. Shuffle it using a random comparison function (not perfect but good enough)
+ * 3. Take the first `n` items from the shuffled array
+ */
 function pickRandom(arr, n) {
   const shuffled = [...arr].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, n);
 }
 
 /**
- * Fallback cards used when scraping fails and no cache exists.
- * These are real, common complaints that are clearly tech-solvable.
+ * FALLBACK_CARDS - Emergency Dataset
+ * 
+ * Hardcoded array of project idea cards used when:
+ * - Live scraping fails (network down, API changes, rate limits)
+ * - No cache exists yet (first run)
+ * - Cache exists but is corrupted
+ * 
+ * These are hand-curated examples of real, tech-solvable complaints
+ * that make good beginner-to-intermediate projects.
  */
 const FALLBACK_CARDS = [
   {
