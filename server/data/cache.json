@@ -2,6 +2,7 @@
   {
     "complaint": "Copy Fail (CVE-2026-31431) is a trivially exploitable logic bug in Linux, reachable on all major distros released in the last 9 years. A small, portable python script gets root on all platforms.",
     "source": "reddit.com/r/sysadmin",
+    "url": "https://reddit.com/r/sysadmin/comments/1szajkx/copy_fail_cve202631431_is_a_trivially_exploitable/",
     "category": "Data & Tracking",
     "techAngle": "Build a lightweight dashboard that turns manual logging into visible trends.",
     "projectTitle": "Bug Log Dashboard",
@@ -16,6 +17,7 @@
   {
     "complaint": "Why does my mom always ask for paycheck stubs with no context?",
     "source": "reddit.com/r/personalfinance",
+    "url": "https://reddit.com/r/personalfinance/comments/1t0ue6d/why_does_my_mom_always_ask_for_paycheck_stubs/",
     "category": "Communication",
     "techAngle": "Build a message tracking or follow-up tool that reduces inbox friction.",
     "projectTitle": "Does Reply Manager",
@@ -30,6 +32,7 @@
   {
     "complaint": "Received a couple emails today about a nearly $28k loan I didn't take out, do I need to take extensive action?",
     "source": "reddit.com/r/personalfinance",
+    "url": "https://reddit.com/r/personalfinance/comments/1swdxqd/received_a_couple_emails_today_about_a_nearly_28k/",
     "category": "Communication",
     "techAngle": "Build a message tracking or follow-up tool that reduces inbox friction.",
     "projectTitle": "Received Reply Manager",
@@ -44,6 +47,7 @@
   {
     "complaint": "An AI Coding Agent Wiped a Startup Database in 9 Seconds and Then Confessed in All Caps Like a Cat Caught Next to a Broken Glass",
     "source": "dev.to",
+    "url": "https://dev.to/pudgycat/an-ai-coding-agent-wiped-a-startup-database-in-9-seconds-and-then-confessed-in-all-caps-like-a-cat-h7m",
     "category": "Data & Tracking",
     "techAngle": "Build a lightweight dashboard that turns manual logging into visible trends.",
     "projectTitle": "Ai Log Dashboard",

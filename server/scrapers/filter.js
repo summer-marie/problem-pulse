@@ -260,6 +260,7 @@ function shapeCard(complaint) {
   return {
     complaint: complaint.text,
     source: complaint.source,
+    url: complaint.url,
     category,
     techAngle: techAngleMap[category] || 'Build a tool that surfaces, documents, or fixes a recurring UX failure.',
     projectTitle: title,
