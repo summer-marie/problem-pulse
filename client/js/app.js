@@ -54,7 +54,7 @@ async function fetchCards() {
 
     // Handle edge case: API returned empty array
     if (!cards.length) {
-      showStatus('No cards returned. Try again in a moment.');
+      showStatus('No matching complaints found right now — the filter may be too strict. Click again to try a fresh scrape.');
       return;
     }
 
@@ -100,13 +100,16 @@ function buildCard(card) {
     <span class="card-category">${escHtml(card.category)}</span>
     <h2 class="card-title">${escHtml(card.projectTitle)}</h2>
     <p class="card-complaint">"${escHtml(card.complaint)}"</p>
+    <p class="card-tech-angle">💡 ${escHtml(card.techAngle)}</p>
     <p class="card-summary">${escHtml(card.summary)}</p>
     <p class="card-mvp-title">MVP Features</p>
     <ul class="card-mvp-list">
       ${card.mvpFeatures.map((f) => `<li>${escHtml(f)}</li>`).join('')}
     </ul>
     <div class="card-footer">
-      <span>via ${escHtml(card.source)}</span>
+      <a href="${escHtml(card.url)}" target="_blank" rel="noopener noreferrer">
+        via ${escHtml(card.source)}
+      </a>
       <span class="card-difficulty">${escHtml(card.difficulty)}</span>
     </div>
   `;
