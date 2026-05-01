@@ -117,7 +117,7 @@ async function scrapeHackerNews(limit = 30) {
  * 
  * Scrapes from:
  * - r/productivity (40 posts) - workflow inefficiencies, tool complaints, time-wasting tasks
- * - r/softwaregore (30 posts) - software bugs, UI fails, and broken features that inspire fixes
+ * - r/sysadmin (30 posts) - IT professionals complaining about tools, software, and automation needs
  * - Hacker News Ask HN (30 posts) - tech-focused problems from developers
  * 
  * Total: ~100 raw complaints focused on tech-solvable problems
@@ -126,7 +126,7 @@ async function scrapeAll() {
   // Run all 3 scrapers in parallel for speed
   const [reddit1, reddit2, hn] = await Promise.all([
     scrapeReddit('productivity', 40),      // Workflow and productivity tool complaints
-    scrapeReddit('softwaregore', 30),      // Software bugs and UI issues
+    scrapeReddit('sysadmin', 30),          // IT pro complaints about software and workflows
     scrapeHackerNews(30)
   ]);
 
