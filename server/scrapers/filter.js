@@ -7,6 +7,24 @@
  * 3. Adds metadata like category, difficulty, MVP features, etc.
  */
 
+// FRUSTRATION_SIGNALS - Sentiment Filter
+// A complaint must contain at least one of these to pass.
+// This prevents positive posts ("Finally fixed it!", "Loving this tool!")
+// from slipping through just because they mention a tech keyword.
+const FRUSTRATION_SIGNALS = [
+  // Negations
+  "can't", "cannot", "won't", "doesn't", "don't", "didn't", "isn't",
+  "wasn't", "aren't", "weren't", "never", "no way",
+  // Frustration words
+  'broken', 'annoying', 'hate', 'horrible', 'terrible', 'awful',
+  'frustrating', 'useless', 'pointless', 'ridiculous', 'impossible',
+  'stuck', 'failed', 'failing', 'keeps', 'always', 'again',
+  // Problem language
+  'problem', 'issue', 'bug', 'error', 'wrong', 'breaks', 'crash',
+  'wish', 'why', 'how is', 'how does', 'tired of', 'sick of',
+  'still not', 'yet another', 'every time', 'once again'
+];
+
 // STRONG_TECH_KEYWORDS - High-Priority Filter
 // If a complaint contains any of these, it is always kept (even if batch cap is reached).
 const STRONG_TECH_KEYWORDS = [
@@ -304,8 +322,16 @@ function filterAndShape(rawComplaints) {
   const tech = [];
   for (const c of rawComplaints) {
     const t = c.text.toLowerCase();
+    
+    // Must NOT have any exclude keywords
     const isExcluded = EXCLUDE_KEYWORDS.some((kw) => t.includes(kw));
     if (isExcluded) continue;
+    
+    // Must have at least one frustration signal (prevents positive posts)
+    const hasFrustration = FRUSTRATION_SIGNALS.some((kw) => t.includes(kw));
+    if (!hasFrustration) continue;
+    
+    // Check tech keyword tier and add to appropriate array
     if (STRONG_TECH_KEYWORDS.some((kw) => t.includes(kw))) {
       strong.push(c);
     } else if (TECH_KEYWORDS.some((kw) => t.includes(kw))) {

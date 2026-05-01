@@ -51,7 +51,7 @@ async function scrapeReddit(subreddit = 'mildlyinfuriating', limit = 50) {
         url: `https://reddit.com${post.data.permalink}`, // Full URL to the post
         upvotes: post.data.ups                           // Popularity metric
       }))
-      .filter((p) => p.text && p.text.length > 20);  // Filter out very short posts
+      .filter((p) => p.text && p.text.length > 40);  // Filter out very short posts
   } catch (err) {
     // If anything goes wrong (network error, API change, timeout), log it and return empty array
     // This prevents one broken scraper from crashing the whole app
@@ -102,7 +102,7 @@ async function scrapeHackerNews(limit = 30) {
         url: `https://news.ycombinator.com/item?id=${r.value.data.id}`, // Full URL to HN post
         upvotes: r.value.data.score ?? 0                                // HN score (points)
       }))
-      .filter((p) => p.text.length > 20);  // Filter out very short questions
+      .filter((p) => p.text.length > 40);  // Filter out very short questions
   } catch (err) {
     // If anything goes wrong, log and return empty array (graceful degradation)
     console.error(`[scraper] HN fetch failed: ${err.message}`);
