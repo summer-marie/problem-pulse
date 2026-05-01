@@ -138,9 +138,9 @@ dist
 .pnp.*
 
 # Scraped data/cache (if storing locally)
-backend/data/*.json
-backend/data/*.csv
-!backend/data/cache.js
+server/data/*.json
+server/data/*.csv
+!server/data/cache.js
 
 # Test files
 test-results/

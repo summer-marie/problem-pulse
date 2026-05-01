@@ -28,7 +28,7 @@ app.use(express.json());
 // Serve the frontend folder as static files
 // This means visiting http://localhost:3000 will show index.html
 // and the browser can load css/style.css, js/app.js, etc.
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.static(path.join(__dirname, '..', 'client')));
 
 // API ROUTES
 // Route all requests starting with /api/cards to the cardsRouter
