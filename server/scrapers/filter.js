@@ -7,6 +7,14 @@
  * 3. Adds metadata like category, difficulty, MVP features, etc.
  */
 
+// STRONG_TECH_KEYWORDS - High-Priority Filter
+// If a complaint contains any of these, it is always kept (even if batch cap is reached).
+const STRONG_TECH_KEYWORDS = [
+  'app', 'website', 'platform', 'software', 'api', 'ui', 'ux',
+  'dashboard', 'tool', 'extension', 'integration', 'sync', 'login',
+  'upload', 'download', 'bug', 'crash', 'feature', 'update'
+];
+
 /**
  * TECH_KEYWORDS - Allowlist Filter
  * 
@@ -45,12 +53,11 @@ const TECH_KEYWORDS = [
   // Health / habits
   'habit', 'routine', 'sleep', 'exercise', 'medication', 'dose',
   // Data / info
-  'data', 'report', 'log', 'record', 'dashboard', 'stats', 'analytics',
+  'data', 'report', 'log', 'record', 'stats', 'analytics',
   // Passwords / accounts
-  'password', 'login', 'account', 'sign in', 'forgot password',
+  'password', 'account', 'sign in', 'forgot password',
   // General frustration with software/process
-  'app', 'website', 'platform', 'software', 'tool', 'form', 'upload',
-  'download', 'sync', 'update', 'install'
+  'form', 'install'
 ];
 
 /**
@@ -123,23 +130,30 @@ function estimateDifficulty(category) {
 /**
  * FUNCTION: suggestTitle
  * 
- * Generates a catchy project name based on the category.
- * Currently uses a simple lookup map - could be enhanced to parse
- * the actual complaint text for more custom names.
+ * Generates dynamic project names by extracting a key word from the complaint text.
+ * Looks for STRONG_TECH_KEYWORDS first, then non-stopword nouns, then falls back to category.
+ * Combines the extracted word with a category-specific suffix.
  */
 function suggestTitle(text, category) {
-  const map = {
-    'Communication': 'SmartReply Tracker',
-    'Scheduling': 'EasyBook Scheduler',
-    'Finance / Shopping': 'SpendSense',
-    'Health & Habits': 'HabitLoop',
-    'Account Management': 'KeyVault Manager',
-    'Data & Tracking': 'DataLog Dashboard',
-    'Organization': 'ClearSpace Organizer',
-    'Software UX': 'FlowFix Tool',
-    'General Productivity': 'FocusFlow'
+  const stopwords = new Set(['the','a','an','is','it','my','i','we','you','they','to','of','for','and','or','but','with','in','on','at','this','that','was','be','are','have','has','been','can','cant','why','how','when','what','just','so','do','doesnt','dont','its','if']);
+  const suffixMap = {
+    'Communication': 'Reply Manager',
+    'Scheduling': 'Booking Tool',
+    'Finance / Shopping': 'Spend Tracker',
+    'Health & Habits': 'Habit Logger',
+    'Account Management': 'Access Manager',
+    'Data & Tracking': 'Log Dashboard',
+    'Organization': 'Organizer',
+    'Software UX': 'Fix Tool',
+    'General Productivity': 'Flow App'
   };
-  return map[category] || 'ProblemSolver App';
+  const words = text.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/);
+  let key = words.find(w => STRONG_TECH_KEYWORDS.includes(w));
+  if (!key) key = words.find(w => w && !stopwords.has(w));
+  if (!key) key = category.split(' ')[0].toLowerCase();
+  key = key.charAt(0).toUpperCase() + key.slice(1);
+  const suffix = suffixMap[category] || 'Flow App';
+  return `${key} ${suffix}`;
 }
 
 /**
@@ -244,26 +258,31 @@ function shapeCard(complaint) {
  * FUNCTION: filterAndShape (MAIN ENTRY POINT)
  * 
  * Takes an array of raw complaints and:
- * 1. Filters to only tech-solvable ones (has TECH_KEYWORD, no EXCLUDE_KEYWORD)
- * 2. Transforms each passing complaint into a full card object
+ * 1. Rejects complaints with EXCLUDE_KEYWORDS (always filtered out)
+ * 2. Prioritizes complaints with STRONG_TECH_KEYWORDS (no limit)
+ * 3. Accepts up to 10 complaints with regular TECH_KEYWORDS (capped)
+ * 4. Transforms each passing complaint into a full card object
  * 
  * This is the main export used by routes/cards.js
  */
 function filterAndShape(rawComplaints) {
-  return rawComplaints
-    .filter((c) => {
-      const t = c.text.toLowerCase();
-      
-      // Must have at least one tech keyword
-      const hasTechKeyword = TECH_KEYWORDS.some((kw) => t.includes(kw));
-      
-      // Must NOT have any exclude keywords
-      const isExcluded = EXCLUDE_KEYWORDS.some((kw) => t.includes(kw));
-      
-      // Pass filter only if tech-related AND not excluded
-      return hasTechKeyword && !isExcluded;
-    })
-    .map(shapeCard);  // Transform each passing complaint into a card
+  let techOnlyCount = 0;
+  const strong = [];
+  const tech = [];
+  for (const c of rawComplaints) {
+    const t = c.text.toLowerCase();
+    const isExcluded = EXCLUDE_KEYWORDS.some((kw) => t.includes(kw));
+    if (isExcluded) continue;
+    if (STRONG_TECH_KEYWORDS.some((kw) => t.includes(kw))) {
+      strong.push(c);
+    } else if (TECH_KEYWORDS.some((kw) => t.includes(kw))) {
+      if (techOnlyCount < 10) {
+        tech.push(c);
+        techOnlyCount++;
+      }
+    }
+  }
+  return [...strong, ...tech].map(shapeCard);
 }
 
 module.exports = { filterAndShape };
