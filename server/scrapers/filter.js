@@ -300,7 +300,7 @@ function filterAndShape(rawComplaints) {
     if (STRONG_TECH_KEYWORDS.some((kw) => t.includes(kw))) {
       strong.push(c);
     } else if (TECH_KEYWORDS.some((kw) => t.includes(kw))) {
-      if (techOnlyCount < 10) {
+      if (techOnlyCount < 25) {
         tech.push(c);
         techOnlyCount++;
       }

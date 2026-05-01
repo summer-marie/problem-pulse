@@ -35,8 +35,8 @@ const CACHE_TTL_MS = 30 * 60 * 1000;
  *  4. HARDCODED FALLBACK: If all else fails, return the built-in dataset below
  */
 router.get('/', async (req, res) => {
-  // Parse the 'count' query parameter, default to 5, max out at 20
-  const count = Math.min(parseInt(req.query.count) || 5, 20);
+  // Parse the 'count' query parameter, default to 6, max out at 20
+  const count = Math.min(parseInt(req.query.count) || 6, 20);
 
   // STEP 1: Try serving from fresh cache first (fastest option)
   if (cacheAge() < CACHE_TTL_MS) {
@@ -81,14 +81,16 @@ router.get('/', async (req, res) => {
  * HELPER FUNCTION: pickRandom
  * Returns `n` randomly selected items from an array.
  * 
- * How it works:
- * 1. Create a copy of the array using spread operator [...arr]
- * 2. Shuffle it using a random comparison function (not perfect but good enough)
- * 3. Take the first `n` items from the shuffled array
+ * Uses Fisher-Yates shuffle algorithm for true randomness with no repeats.
+ * Time complexity: O(n), no bias, guaranteed unique selection.
  */
 function pickRandom(arr, n) {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, n);
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
 }
 
 /**

@@ -8,12 +8,12 @@
  * 4. XSS protection via HTML escaping
  */
 
-// API endpoint - requests 6 cards per load
+// API endpoint - requests 8 cards per load
 // On deployment, frontend and backend share the same origin, so use relative URL
 // Locally, they may run on different ports, so use full localhost URL
 const API_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:3000/api/cards?count=6'
-  : '/api/cards?count=6';
+  ? 'http://localhost:3000/api/cards?count=8'
+  : '/api/cards?count=8';
 
 // DOM element references (cached for performance)
 const loadBtn = document.getElementById('load-btn');              // The "Get Project Ideas" button
