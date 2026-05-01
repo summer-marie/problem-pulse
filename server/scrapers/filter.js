@@ -39,43 +39,35 @@ const STRONG_TECH_KEYWORDS = [
  * Keywords that strongly suggest a complaint is tech-solvable.
  * If a complaint contains ANY of these keywords, it passes the first filter.
  * 
- * Organized by theme:
- * - Automation/reminders
- * - Time waste/friction
- * - Organization/search
- * - Communication
- * - Scheduling
- * - Money/shopping
- * - Health/habits
- * - Data/analytics
- * - Security/accounts
- * - Software/tools
+ * Organized by the 6 valid categories:
+ * - Communication (messages, emails, replies)
+ * - Scheduling (appointments, calendars, booking)
+ * - Finance/Shopping (billing, subscriptions, orders)
+ * - Account Management (passwords, logins)
+ * - Data & Tracking (logs, analytics, reports)
+ * - Software UX (tools, apps, software friction)
+ * 
+ * Plus general friction keywords that may apply across categories
  */
 const TECH_KEYWORDS = [
-  // Automation / reminders
-  'forgot', 'forget', 'remind', 'reminder', 'notification', 'alert',
-  'track', 'tracking', 'keep track',
-  // Friction / wasted time
-  'waste', 'takes forever', 'too long', 'slow', 'hours', 'manual',
-  'tedious', 'repetitive', 'copy paste', 'copy-paste',
-  // Organization / finding things
-  'lost', 'find', 'search', 'organize', 'messy', 'scattered', 'clutter',
-  'where is', "can't find", 'hard to find',
   // Communication
-  'email', 'message', 'text', 'respond', 'response', 'reply',
+  'email', 'message', 'text', 'respond', 'response', 'reply', 'notification',
   // Scheduling
   'schedule', 'appointment', 'calendar', 'booking', 'reschedule',
-  // Money / shopping
+  // Finance / Shopping
   'price', 'overcharged', 'billing', 'bill', 'subscription', 'cancel',
   'refund', 'shipping', 'delivery', 'order',
-  // Health / habits
-  'habit', 'routine', 'sleep', 'exercise', 'medication', 'dose',
-  // Data / info
-  'data', 'report', 'log', 'record', 'stats', 'analytics',
-  // Passwords / accounts
-  'password', 'account', 'sign in', 'forgot password',
-  // General frustration with software/process
-  'form', 'install'
+  // Account Management
+  'password', 'account', 'sign in', 'forgot password', 'login',
+  // Data & Tracking
+  'data', 'report', 'log', 'record', 'stats', 'analytics', 'track', 'tracking',
+  // Software UX
+  'app', 'software', 'tool', 'upload', 'download', 'sync', 'platform', 'website',
+  'form', 'install', 'slow', 'clunky',
+  // General friction (applies across categories)
+  'waste', 'takes forever', 'too long', 'hours', 'manual', 'tedious',
+  'repetitive', 'copy paste', 'copy-paste', 'forgot', 'forget', 'remind', 'reminder',
+  'alert', 'lost', 'find', 'search'
 ];
 
 /**
@@ -102,29 +94,25 @@ const EXCLUDE_KEYWORDS = [
  * 
  * Analyzes the complaint text and assigns it to a category.
  * Uses regex pattern matching against common keywords.
+ * Returns null if no category matches (complaint will be filtered out).
  * 
- * Categories:
+ * Valid Categories (6 total):
  * - Communication (emails, messages, notifications)
  * - Scheduling (calendars, appointments, meetings)
  * - Finance / Shopping (bills, subscriptions, payments)
- * - Health & Habits (medication, exercise, routines)
  * - Account Management (passwords, logins)
  * - Data & Tracking (logs, reports, analytics)
- * - Organization (files, search, clutter)
  * - Software UX (apps, tools, websites)
- * - General Productivity (default fallback)
  */
 function detectCategory(text) {
   const t = text.toLowerCase();
   if (/email|message|reply|respond|notification|text/.test(t)) return 'Communication';
   if (/schedule|calendar|appointment|booking|meeting/.test(t)) return 'Scheduling';
   if (/price|bill|charge|subscription|refund|payment|shipping/.test(t)) return 'Finance / Shopping';
-  if (/habit|routine|sleep|exercise|medication|dose/.test(t)) return 'Health & Habits';
   if (/password|login|account|sign in/.test(t)) return 'Account Management';
   if (/track|log|record|data|report|analytics|dashboard/.test(t)) return 'Data & Tracking';
-  if (/organize|find|search|lost|clutter|messy|scattered/.test(t)) return 'Organization';
   if (/app|website|platform|software|tool|upload|download|sync/.test(t)) return 'Software UX';
-  return 'General Productivity';
+  return null;
 }
 
 /**
@@ -138,8 +126,8 @@ function detectCategory(text) {
  * - Beginner-Intermediate (1-3 weeks): Falls in between
  */
 function estimateDifficulty(category) {
-  const easy = ['Communication', 'Scheduling', 'Health & Habits'];
-  const medium = ['Finance / Shopping', 'Organization', 'Data & Tracking'];
+  const easy = ['Communication', 'Scheduling'];
+  const medium = ['Finance / Shopping', 'Data & Tracking'];
   if (easy.includes(category)) return 'Beginner (1–2 weeks)';
   if (medium.includes(category)) return 'Intermediate (2–4 weeks)';
   return 'Beginner–Intermediate (1–3 weeks)';
@@ -158,19 +146,16 @@ function suggestTitle(text, category) {
     'Communication': 'Reply Manager',
     'Scheduling': 'Booking Tool',
     'Finance / Shopping': 'Spend Tracker',
-    'Health & Habits': 'Habit Logger',
     'Account Management': 'Access Manager',
     'Data & Tracking': 'Log Dashboard',
-    'Organization': 'Organizer',
-    'Software UX': 'Fix Tool',
-    'General Productivity': 'Flow App'
+    'Software UX': 'Fix Tool'
   };
   const words = text.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/);
   let key = words.find(w => STRONG_TECH_KEYWORDS.includes(w));
   if (!key) key = words.find(w => w && !stopwords.has(w));
-  if (!key) key = category.split(' ')[0].toLowerCase();
-  key = key.charAt(0).toUpperCase() + key.slice(1);
-  const suffix = suffixMap[category] || 'Flow App';
+  if (!key) key = category && category.split(' ')[0].toLowerCase();
+  key = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
+  const suffix = suffixMap[category] || 'Fix Tool';
   return `${key} ${suffix}`;
 }
 
@@ -202,11 +187,6 @@ function generateMVPFeatures(category) {
       'Show a monthly spending summary',
       'Flag any charges above a custom threshold'
     ],
-    'Health & Habits': [
-      'Log a daily habit with a checkbox',
-      'Show a weekly streak count',
-      'Send a reminder at a set time each day'
-    ],
     'Account Management': [
       'Store site names and masked password hints',
       'Copy password hint to clipboard with one click',
@@ -217,24 +197,14 @@ function generateMVPFeatures(category) {
       'Display a sortable table of entries',
       'Export entries as a CSV file'
     ],
-    'Organization': [
-      'Add items to a categorized list',
-      'Search and filter items by tag',
-      'Archive completed or resolved items'
-    ],
     'Software UX': [
       'Surface the most common user complaints from a source',
       'Display complaints as filterable cards',
       'Allow users to upvote the most frustrating issues'
-    ],
-    'General Productivity': [
-      'Create a task with a title and priority level',
-      'Mark tasks as done and move them to a completed list',
-      'Filter tasks by due date or category'
     ]
   };
 
-  return features[category] || features['General Productivity'];
+  return features[category] || features['Software UX'];
 }
 
 /**
@@ -248,14 +218,11 @@ function generateSummary(text, category, title) {
     'Communication': `${title} helps you track messages and flag ones that need a reply before they fall through the cracks.`,
     'Scheduling': `${title} lets you book or manage time slots without back-and-forth emails or phone calls.`,
     'Finance / Shopping': `${title} logs your recurring costs so you always know what you're paying and what to cancel.`,
-    'Health & Habits': `${title} tracks your daily habits and shows your streak so you stay consistent without thinking about it.`,
     'Account Management': `${title} stores your account hints and flags outdated credentials before they lock you out.`,
     'Data & Tracking': `${title} turns your manual logs into a clean dashboard so trends are visible at a glance.`,
-    'Organization': `${title} tags and indexes your items so you can find anything in seconds instead of searching forever.`,
-    'Software UX': `${title} surfaces and documents UX problems so they can be prioritized and fixed.`,
-    'General Productivity': `${title} removes a repeating manual step from your workflow so you can focus on the actual work.`
+    'Software UX': `${title} surfaces and documents UX problems so they can be prioritized and fixed.`
   };
-  return summaryMap[category] || `${title} helps solve a recurring workflow problem. Users save time by having one place to manage it.`;
+  return summaryMap[category] || `${title} surfaces and documents UX problems so they can be prioritized and fixed.`;
 }
 
 /**
@@ -285,19 +252,16 @@ function shapeCard(complaint) {
     'Communication': 'Build a message tracking or follow-up tool that reduces inbox friction.',
     'Scheduling': 'Build a scheduling or booking tool that eliminates manual coordination.',
     'Finance / Shopping': 'Build a spending tracker or subscription manager that surfaces hidden costs.',
-    'Health & Habits': 'Build a habit logger or reminder tool that creates consistency.',
     'Account Management': 'Build a credential organizer that reduces login friction.',
     'Data & Tracking': 'Build a lightweight dashboard that turns manual logging into visible trends.',
-    'Organization': 'Build a tagging or search tool that makes scattered files findable.',
-    'Software UX': 'Build a tool that surfaces, documents, or fixes a recurring UX failure.',
-    'General Productivity': 'Build a workflow tool that removes a repeating manual step.'
+    'Software UX': 'Build a tool that surfaces, documents, or fixes a recurring UX failure.'
   };
 
   return {
     complaint: complaint.text,
     source: complaint.source,
     category,
-    techAngle: techAngleMap[category] || 'Build a tool that removes or reduces the friction described in this complaint.',
+    techAngle: techAngleMap[category] || 'Build a tool that surfaces, documents, or fixes a recurring UX failure.',
     projectTitle: title,
     summary: generateSummary(complaint.text, category, title),
     mvpFeatures: mvp,
@@ -322,15 +286,15 @@ function filterAndShape(rawComplaints) {
   const tech = [];
   for (const c of rawComplaints) {
     const t = c.text.toLowerCase();
-    
     // Must NOT have any exclude keywords
     const isExcluded = EXCLUDE_KEYWORDS.some((kw) => t.includes(kw));
     if (isExcluded) continue;
-    
     // Must have at least one frustration signal (prevents positive posts)
     const hasFrustration = FRUSTRATION_SIGNALS.some((kw) => t.includes(kw));
     if (!hasFrustration) continue;
-    
+    // Must have a valid category (not null)
+    const category = detectCategory(c.text);
+    if (!category) continue;
     // Check tech keyword tier and add to appropriate array
     if (STRONG_TECH_KEYWORDS.some((kw) => t.includes(kw))) {
       strong.push(c);

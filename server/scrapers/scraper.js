@@ -2,7 +2,7 @@
  * SCRAPER.JS - Web Scraping Module
  * 
  * This file fetches real-world complaints from:
- * 1. Reddit (r/mildlyinfuriating, r/CasualConversation)
+ * 1. Reddit (r/webdev, r/sysadmin)
  * 2. Hacker News (Ask HN posts)
  * 
  * All functions gracefully handle errors and return empty arrays on failure
@@ -116,7 +116,7 @@ async function scrapeHackerNews(limit = 30) {
  * Runs all scrapers in parallel and combines results into one array.
  * 
  * Scrapes from:
- * - r/productivity (40 posts) - workflow inefficiencies, tool complaints, time-wasting tasks
+ * - r/webdev (40 posts) - web development complaints, UX issues, tool frustrations
  * - r/sysadmin (30 posts) - IT professionals complaining about tools, software, and automation needs
  * - Hacker News Ask HN (30 posts) - tech-focused problems from developers
  * 
@@ -125,8 +125,8 @@ async function scrapeHackerNews(limit = 30) {
 async function scrapeAll() {
   // Run all 3 scrapers in parallel for speed
   const [reddit1, reddit2, hn] = await Promise.all([
-    scrapeReddit('productivity', 40),      // Workflow and productivity tool complaints
-    scrapeReddit('sysadmin', 30),          // IT pro complaints about software and workflows
+    scrapeReddit('webdev', 40),      // Web development complaints (Software UX, Data & Tracking)
+    scrapeReddit('sysadmin', 30),    // IT pro complaints about software and workflows
     scrapeHackerNews(30)
   ]);
 

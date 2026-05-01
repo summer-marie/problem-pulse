@@ -132,32 +132,32 @@ const FALLBACK_CARDS = [
     difficulty: 'Beginner (1–2 weeks)'
   },
   {
-    complaint: 'I can never find the file I need — my downloads folder is a complete disaster.',
+    complaint: 'I have so many passwords saved across different browsers and I can never remember which account uses which email.',
     source: 'fallback dataset',
-    category: 'Organization',
-    techAngle: 'Build a personal file tagging and search tool.',
-    projectTitle: 'TagDrop',
-    summary: 'A browser-based tool that lets users tag and annotate files they\'ve uploaded so they can find them instantly later.',
+    category: 'Account Management',
+    techAngle: 'Build a simple credential organizer that tracks which email is used for each service.',
+    projectTitle: 'Account Access Manager',
+    summary: 'A tool that stores account hints (service name, username/email used) so users can quickly look up login details without storing passwords.',
     mvpFeatures: [
-      'Upload or link a file and add custom tags',
-      'Search all files by tag, name, or date added',
-      'Archive old files to reduce clutter on the main view'
+      'Store site names and the associated email/username',
+      'Search accounts by service name or email',
+      'Flag accounts that haven\'t been updated in 6+ months'
     ],
     difficulty: 'Beginner–Intermediate (1–3 weeks)'
   },
   {
-    complaint: 'I keep missing medication doses because I forget to take them at the right time.',
+    complaint: 'I manually log my expenses in a spreadsheet every month and it takes forever to spot spending trends.',
     source: 'fallback dataset',
-    category: 'Health & Habits',
-    techAngle: 'Build a daily medication reminder and dose log.',
-    projectTitle: 'DoseCheck',
-    summary: 'A habit tracker focused on medication — users set a daily dose schedule and log each time they take it.',
+    category: 'Data & Tracking',
+    techAngle: 'Build a lightweight expense dashboard that visualizes spending patterns.',
+    projectTitle: 'Expense Log Dashboard',
+    summary: 'An app where users add expense entries and see a monthly breakdown with category totals and trend graphs.',
     mvpFeatures: [
-      'Add a medication with name, dose, and daily reminder time',
-      'One-tap logging when a dose is taken',
-      'Show a weekly streak and any missed days highlighted in red'
+      'Add a new expense with amount, category, and date',
+      'Display a sortable table of all entries',
+      'Export entries as a CSV file for further analysis'
     ],
-    difficulty: 'Beginner (1–2 weeks)'
+    difficulty: 'Intermediate (2–4 weeks)'
   },
   {
     complaint: 'Booking appointments at my dentist still requires a phone call — why is there no online option?',
@@ -172,6 +172,20 @@ const FALLBACK_CARDS = [
       'Show the business owner a list of all upcoming reservations'
     ],
     difficulty: 'Intermediate (2–4 weeks)'
+  },
+  {
+    complaint: 'The file upload progress bar in this app freezes at 99% and I have no idea if it actually worked or not.',
+    source: 'fallback dataset',
+    category: 'Software UX',
+    techAngle: 'Build a tool that surfaces and documents common UX failures in web apps.',
+    projectTitle: 'Upload Fix Tool',
+    summary: 'A feedback collector that lets users report confusing or broken UX patterns they encounter, helping developers prioritize fixes.',
+    mvpFeatures: [
+      'Submit a UX complaint with a screenshot and brief description',
+      'Display all complaints as filterable cards by category',
+      'Allow users to upvote the most frustrating issues'
+    ],
+    difficulty: 'Beginner–Intermediate (1–3 weeks)'
   }
 ];
 
