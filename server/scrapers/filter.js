@@ -110,8 +110,8 @@ function detectCategory(text) {
   if (/schedule|calendar|appointment|booking|meeting/.test(t)) return 'Scheduling';
   if (/price|bill|charge|subscription|refund|payment|shipping/.test(t)) return 'Finance / Shopping';
   if (/password|login|account|sign in/.test(t)) return 'Account Management';
+  if (/app|website|platform|software|tool|upload|download|sync|ui|ux|interface|button|feature|crash|loading|broken|slow|clunky|glitch/.test(t)) return 'Software UX';
   if (/track|log|record|data|report|analytics|dashboard/.test(t)) return 'Data & Tracking';
-  if (/app|website|platform|software|tool|upload|download|sync/.test(t)) return 'Software UX';
   return null;
 }
 
