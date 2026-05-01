@@ -14,6 +14,7 @@ require('dotenv').config();
 const express = require('express');        // Web server framework
 const cors = require('cors');              // Cross-Origin Resource Sharing middleware
 const path = require('path');              // File path utilities
+const rateLimit = require('express-rate-limit');  // Rate limiting middleware
 const cardsRouter = require('./routes/cards');  // Router that handles /api/cards requests
 
 // Initialize the Express application
@@ -33,10 +34,21 @@ app.use(express.json());
 // and the browser can load css/style.css, js/app.js, etc.
 app.use(express.static(path.join(__dirname, '..', 'client')));
 
+// RATE LIMITING
+// Protects Reddit/HN from being hammered and prevents cache bypass abuse
+// Limits each IP to 20 requests per minute on the /api/cards endpoint
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,  // 1 minute window
+  max: 20,              // max 20 requests per minute per IP
+  standardHeaders: true,  // sends rate limit info in response headers
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please wait a moment and try again.' }
+});
+
 // API ROUTES
 // Route all requests starting with /api/cards to the cardsRouter
 // Example: GET http://localhost:3000/api/cards?count=5
-app.use('/api/cards', cardsRouter);
+app.use('/api/cards', apiLimiter, cardsRouter);
 
 // START THE SERVER
 // Listen on PORT 3000 and log a success message when ready
