@@ -116,17 +116,17 @@ async function scrapeHackerNews(limit = 30) {
  * Runs all scrapers in parallel and combines results into one array.
  * 
  * Scrapes from:
- * - r/mildlyinfuriating (40 posts) - everyday frustrations
- * - r/CasualConversation (30 posts) - general life complaints
- * - Hacker News Ask HN (30 posts) - tech-focused problems
+ * - r/productivity (40 posts) - workflow inefficiencies, tool complaints, time-wasting tasks
+ * - r/softwaregore (30 posts) - software bugs, UI fails, and broken features that inspire fixes
+ * - Hacker News Ask HN (30 posts) - tech-focused problems from developers
  * 
- * Total: ~100 raw complaints that will be filtered down to tech-solvable ones
+ * Total: ~100 raw complaints focused on tech-solvable problems
  */
 async function scrapeAll() {
   // Run all 3 scrapers in parallel for speed
   const [reddit1, reddit2, hn] = await Promise.all([
-    scrapeReddit('mildlyinfuriating', 40),
-    scrapeReddit('CasualConversation', 30),
+    scrapeReddit('productivity', 40),      // Workflow and productivity tool complaints
+    scrapeReddit('softwaregore', 30),      // Software bugs and UI issues
     scrapeHackerNews(30)
   ]);
 
