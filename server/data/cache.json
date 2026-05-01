@@ -1,0 +1,92 @@
+[
+  {
+    "complaint": "I just “bought” a domain, built branding around it… turns out I never owned it",
+    "source": "reddit.com/r/webdev",
+    "url": "https://reddit.com/r/webdev/comments/1sywjbc/i_just_bought_a_domain_built_branding_around_it/",
+    "category": "Software UX",
+    "techAngle": "Build a tool that surfaces, documents, or fixes a recurring UX failure.",
+    "projectTitle": "Bought Fix Tool",
+    "summary": "Bought Fix Tool surfaces and documents UX problems so they can be prioritized and fixed.",
+    "mvpFeatures": [
+      "Surface the most common user complaints from a source",
+      "Display complaints as filterable cards",
+      "Allow users to upvote the most frustrating issues"
+    ],
+    "difficulty": "Beginner–Intermediate (1–3 weeks)"
+  },
+  {
+    "complaint": "If our client keeps changing requirements, our development team should get extra hours to implement those changes right?",
+    "source": "reddit.com/r/webdev",
+    "url": "https://reddit.com/r/webdev/comments/1t01exs/if_our_client_keeps_changing_requirements_our/",
+    "category": "Software UX",
+    "techAngle": "Build a tool that surfaces, documents, or fixes a recurring UX failure.",
+    "projectTitle": "Our Fix Tool",
+    "summary": "Our Fix Tool surfaces and documents UX problems so they can be prioritized and fixed.",
+    "mvpFeatures": [
+      "Surface the most common user complaints from a source",
+      "Display complaints as filterable cards",
+      "Allow users to upvote the most frustrating issues"
+    ],
+    "difficulty": "Beginner–Intermediate (1–3 weeks)"
+  },
+  {
+    "complaint": "Copy Fail (CVE-2026-31431) is a trivially exploitable logic bug in Linux, reachable on all major distros released in the last 9 years. A small, portable python script gets root on all platforms.",
+    "source": "reddit.com/r/sysadmin",
+    "url": "https://reddit.com/r/sysadmin/comments/1szajkx/copy_fail_cve202631431_is_a_trivially_exploitable/",
+    "category": "Software UX",
+    "techAngle": "Build a tool that surfaces, documents, or fixes a recurring UX failure.",
+    "projectTitle": "Bug Fix Tool",
+    "summary": "Bug Fix Tool surfaces and documents UX problems so they can be prioritized and fixed.",
+    "mvpFeatures": [
+      "Surface the most common user complaints from a source",
+      "Display complaints as filterable cards",
+      "Allow users to upvote the most frustrating issues"
+    ],
+    "difficulty": "Beginner–Intermediate (1–3 weeks)"
+  },
+  {
+    "complaint": "Why does my mom always ask for paycheck stubs with no context?",
+    "source": "reddit.com/r/personalfinance",
+    "url": "https://reddit.com/r/personalfinance/comments/1t0ue6d/why_does_my_mom_always_ask_for_paycheck_stubs/",
+    "category": "Communication",
+    "techAngle": "Build a message tracking or follow-up tool that reduces inbox friction.",
+    "projectTitle": "Does Reply Manager",
+    "summary": "Does Reply Manager helps you track messages and flag ones that need a reply before they fall through the cracks.",
+    "mvpFeatures": [
+      "Log incoming messages with timestamps",
+      "Set follow-up reminders for unanswered messages",
+      "Mark threads as resolved"
+    ],
+    "difficulty": "Beginner (1–2 weeks)"
+  },
+  {
+    "complaint": "Received a couple emails today about a nearly $28k loan I didn't take out, do I need to take extensive action?",
+    "source": "reddit.com/r/personalfinance",
+    "url": "https://reddit.com/r/personalfinance/comments/1swdxqd/received_a_couple_emails_today_about_a_nearly_28k/",
+    "category": "Communication",
+    "techAngle": "Build a message tracking or follow-up tool that reduces inbox friction.",
+    "projectTitle": "Received Reply Manager",
+    "summary": "Received Reply Manager helps you track messages and flag ones that need a reply before they fall through the cracks.",
+    "mvpFeatures": [
+      "Log incoming messages with timestamps",
+      "Set follow-up reminders for unanswered messages",
+      "Mark threads as resolved"
+    ],
+    "difficulty": "Beginner (1–2 weeks)"
+  },
+  {
+    "complaint": "An AI Coding Agent Wiped a Startup Database in 9 Seconds and Then Confessed in All Caps Like a Cat Caught Next to a Broken Glass",
+    "source": "dev.to",
+    "url": "https://dev.to/pudgycat/an-ai-coding-agent-wiped-a-startup-database-in-9-seconds-and-then-confessed-in-all-caps-like-a-cat-h7m",
+    "category": "Software UX",
+    "techAngle": "Build a tool that surfaces, documents, or fixes a recurring UX failure.",
+    "projectTitle": "Ai Fix Tool",
+    "summary": "Ai Fix Tool surfaces and documents UX problems so they can be prioritized and fixed.",
+    "mvpFeatures": [
+      "Surface the most common user complaints from a source",
+      "Display complaints as filterable cards",
+      "Allow users to upvote the most frustrating issues"
+    ],
+    "difficulty": "Beginner–Intermediate (1–3 weeks)"
+  }
+]
