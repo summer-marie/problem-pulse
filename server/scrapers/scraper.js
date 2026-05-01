@@ -2,15 +2,16 @@
  * SCRAPER.JS - Web Scraping Module
  * 
  * This file fetches real-world complaints from:
- * 1. Reddit (r/webdev, r/sysadmin)
+ * 1. Reddit (r/webdev, r/sysadmin, r/devops, r/personalfinance)
  * 2. Hacker News (Ask HN posts)
+ * 3. Dev.to (discuss tag RSS feed)
  * 
  * All functions gracefully handle errors and return empty arrays on failure
  * so the app never crashes even if scraping breaks.
  */
 
 const axios = require('axios');    // HTTP client for making web requests
-const cheerio = require('cheerio'); // HTML parser (not used currently but available for future scraping)
+const cheerio = require('cheerio'); // HTML/XML parser for RSS feeds and web scraping
 
 /**
  * FUNCTION: scrapeReddit
@@ -111,6 +112,56 @@ async function scrapeHackerNews(limit = 30) {
 }
 
 /**
+ * FUNCTION: scrapeDevTo
+ * 
+ * Scrapes Dev.to's public RSS feed for posts in the "discuss" tag.
+ * The discuss tag surfaces posts where developers ask for help or vent about tool problems.
+ * 
+ * How it works:
+ * 1. Fetch the RSS XML feed from Dev.to's public API
+ * 2. Parse the XML using cheerio to extract item elements
+ * 3. Extract title (text) and link (url) from each item
+ * 4. Filter out very short posts (< 40 chars)
+ * 
+ * Returns: Array of complaint objects with { text, source, url, upvotes }
+ */
+async function scrapeDevTo(limit = 20) {
+  const url = 'https://dev.to/feed/tag/discuss';
+
+  try {
+    // Step 1: Fetch the RSS XML feed
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'ProblemPulse/1.0 (student project)'
+      },
+      timeout: 8000
+    });
+
+    // Step 2: Parse the XML using cheerio
+    const $ = cheerio.load(response.data, { xmlMode: true });
+    const items = $('item').toArray().slice(0, limit);  // Get first `limit` items
+
+    // Step 3: Transform each RSS item into our standard format
+    return items
+      .map((item) => {
+        const title = $(item).find('title').text();
+        const link = $(item).find('link').text();
+        return {
+          text: title,           // The post title
+          source: 'dev.to',      // Source identifier
+          url: link,             // Full URL to the post
+          upvotes: 0             // RSS has no upvote data
+        };
+      })
+      .filter((p) => p.text && p.text.length > 40);  // Filter out very short posts
+  } catch (err) {
+    // If anything goes wrong, log and return empty array (graceful degradation)
+    console.error(`[scraper] Dev.to fetch failed: ${err.message}`);
+    return [];
+  }
+}
+
+/**
  * FUNCTION: scrapeAll (MAIN ENTRY POINT)
  * 
  * Runs all scrapers in parallel and combines results into one array.
@@ -118,20 +169,26 @@ async function scrapeHackerNews(limit = 30) {
  * Scrapes from:
  * - r/webdev (40 posts) - web development complaints, UX issues, tool frustrations
  * - r/sysadmin (30 posts) - IT professionals complaining about tools, software, and automation needs
+ * - r/devops (25 posts) - DevOps engineers frustrated with pipelines, auth, monitoring tools
+ * - r/personalfinance (25 posts) - billing complaints, subscription issues, hidden fees
  * - Hacker News Ask HN (30 posts) - tech-focused problems from developers
+ * - Dev.to discuss tag (20 posts) - developer discussions about tool problems
  * 
- * Total: ~100 raw complaints focused on tech-solvable problems
+ * Total: ~170 raw complaints focused on tech-solvable problems
  */
 async function scrapeAll() {
-  // Run all 3 scrapers in parallel for speed
-  const [reddit1, reddit2, hn] = await Promise.all([
-    scrapeReddit('webdev', 40),      // Web development complaints (Software UX, Data & Tracking)
-    scrapeReddit('sysadmin', 30),    // IT pro complaints about software and workflows
-    scrapeHackerNews(30)
+  // Run all scrapers in parallel for speed
+  const [reddit1, reddit2, reddit3, reddit4, hn, devto] = await Promise.all([
+    scrapeReddit('webdev', 40),           // Web development complaints (Software UX, Data & Tracking)
+    scrapeReddit('sysadmin', 30),         // IT pro complaints about software and workflows
+    scrapeReddit('devops', 25),           // DevOps engineers frustrated with pipelines, auth, monitoring tools
+    scrapeReddit('personalfinance', 25),  // Billing complaints, subscription issues, hidden fees
+    scrapeHackerNews(30),                 // Tech-focused problems from developers
+    scrapeDevTo(20)                       // Developer discussions about tool problems
   ]);
 
   // Combine all results into one array
-  return [...reddit1, ...reddit2, ...hn];
+  return [...reddit1, ...reddit2, ...reddit3, ...reddit4, ...hn, ...devto];
 }
 
 module.exports = { scrapeAll };
